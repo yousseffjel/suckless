@@ -240,8 +240,8 @@ static const char *termcmd[]  = { "alacritty", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key            function                argument */
-	{ MODKEY,                       XK_p,          spawn,                  {.v = dmenucmd } },
-	{ MODKEY,    		            XK_Return,     spawn,                  {.v = termcmd } }, 
+	{ MODKEY,                       XK_d,          spawn,                  {.v = dmenucmd } },
+	{ MODKEY,    		                XK_Return,     spawn,                  {.v = termcmd } }, 
 	{ MODKEY|ShiftMask,             XK_b,          togglebar,              {0} },
 	{ MODKEY,                       XK_j,          focusstack,             {.i = +1 } },
 	{ MODKEY,                       XK_k,          focusstack,             {.i = -1 } },
@@ -264,9 +264,9 @@ static const Key keys[] = {
 	{ MODKEY|ControlMask,           XK_comma,      cyclelayout,            {.i = -1 } },
 	{ MODKEY|ControlMask,           XK_period,     cyclelayout,            {.i = +1 } },
    /*Scratchpads*/
-	{ MODKEY|ShiftMask,			  	XK_Return,		togglescratch,			 {.ui = 0 } }, /* Terminal */
-	{ MODKEY|ShiftMask,   			XK_e,	 	    togglescratch, 			 {.ui = 1 } }, /* Ranger */
-	{ MODKEY, 			     	    XK_b,		    togglescratch,			 {.ui = 3 } }, /* biwarden */
+	{ MODKEY|ShiftMask,		    	  	XK_Return,	   togglescratch,			     {.ui = 0 } }, /* Terminal */
+	{ MODKEY|ShiftMask,             XK_e,	 	       togglescratch, 			   {.ui = 1 } }, /* Ranger */
+	{ MODKEY,        			     	    XK_b,		       togglescratch,			     {.ui = 3 } }, /* biwarden */
 	
 	/*tagkeys*/
 	TAGKEYS(                        XK_1,                                  0)
