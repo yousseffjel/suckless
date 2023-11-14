@@ -3,7 +3,6 @@
 #include "bar_tagicons.c"
 #include "bar.c"
 
-#include "bar_alpha.c"
 #include "bar_ltsymbol.c"
 #include "bar_status.c"
 #include "bar_status2d.c"
@@ -14,11 +13,8 @@
 /* Other patches */
 #include "attachx.c"
 #include "autostart.c"
-#include "cyclelayouts.c"
-#include "floatpos.c"
 #include "movestack.c"
 #include "pertag.c"
-#include "rotatestack.c"
 #include "scratchpad.c"
 #include "vanitygaps.c"
 /* Layouts */
