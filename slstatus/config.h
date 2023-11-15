@@ -64,20 +64,21 @@ static const char unknown_str[] = "n/a";
 static const struct arg args[] = {
 	/* function format          argument */
 
-	{ netspeed_rx, "%sB/s|", "wlp3s0" },
-  { uptime,          "UPtime^c#ffffff^:%s|",         NULL           },
+	{ uptime,          "^c#f8f8f2^UP%s|",         NULL           },
  
-  { battery_state, "Bat:%s"    , "BAT0" },
-  { battery_perc,  "%s%%|", "BAT0" },
+  { battery_state, "Bat 1:%s"    , "BAT0" },
+  { battery_perc,  "%s%% ", "BAT0" },
 
-	{ temp,   "%sC|",  "/sys/class/thermal/thermal_zone0/temp" },
-  { cpu_perc,	   "CPU^c#ffffff^:%s%%|",         NULL           },
-	{ ram_perc,        "Mem^c#ffffff^:%s%%|",        NULL           },
+  { battery_state, "2:%s"    , "BAT1" },
+  { battery_perc,  "%s%%|", "BAT1" },
+
+	{ temp,   "%s°C|",  "/sys/class/thermal/thermal_zone0/temp" },
 	
-  { run_command,          "light:%s%%|",      "xbacklight -get" },	
-	{ run_command,     "VOL^c#ffffff^:%s|",     "volume.sh" }, 
-  
-  { wifi_essid, "%s|", "wlp3s0" },
+	{ cpu_perc,	       "^c#f8f8f2^CPU:%s%%|",         NULL           },
+	
+	{ ram_perc,        "^c#f8f8f2^Mem:%s%%|",        NULL           },
 
-  { datetime,        "^c#ffffff^%s",         "%a %b %d - %I:%M%p" },
+	{ run_command,     "^c#f8f8f2^Vol:%s|",     "~/bin/volume.sh" }, 
+        
+	{ datetime,        "^c#f8f8f2^%s",         "%a %b %d - %I:%M%p" },
 };
