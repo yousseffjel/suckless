@@ -1,6 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* interval between updates (in ms) */
+/*#include <stdexcept>*/
 const unsigned int interval = 1000;
 
 /* text to show if no value can be retrieved */
@@ -64,21 +65,21 @@ static const char unknown_str[] = "n/a";
 static const struct arg args[] = {
 	/* function format          argument */
 
-	{ uptime,          "^c#f8f8f2^UP%s|",         NULL           },
- 
-  { battery_state, "Bat 1:%s"    , "BAT0" },
-  { battery_perc,  "%s%% ", "BAT0" },
+  { run_command,        "%s|", "~/bin/net.sh" },
 
-  { battery_state, "2:%s"    , "BAT1" },
-  { battery_perc,  "%s%%|", "BAT1" },
+  { uptime,             "UP%s|",         NULL           },
+  
+  { run_command, "%s|", "~/bin/packages.sh" },
 
-	{ temp,   "%s°C|",  "/sys/class/thermal/thermal_zone0/temp" },
-	
-	{ cpu_perc,	       "^c#f8f8f2^CPU:%s%%|",         NULL           },
-	
-	{ ram_perc,        "^c#f8f8f2^Mem:%s%%|",        NULL           },
+  { run_command, "%s|", "~/bin/weather.sh" },
+  
+  { run_command,        "%s", "~/bin/bat1.sh" },
+  { run_command,        "%s|", "~/bin/bat2.sh" },
+  { run_command,        "%s|", "~/bin/temp.sh" },
+  { run_command,        "%s|", "~/bin/cpu.sh" },
+  { run_command,        "%s|", "~/bin/memory.sh" },
 
-	{ run_command,     "^c#f8f8f2^Vol:%s|",     "~/bin/volume.sh" }, 
-        
-	{ datetime,        "^c#f8f8f2^%s",         "%a %b %d - %I:%M%p" },
+  { run_command,        "%s|",     "~/bin/volume.sh" },
+  
+	{ run_command,        "%s",         "~/bin/date.sh" },
 };
