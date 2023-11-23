@@ -65,14 +65,10 @@ static const char unknown_str[] = "n/a";
 static const struct arg args[] = {
 	/* function format          argument */
 
-  { run_command,        "%s|", "~/bin/net.sh" },
-
   { uptime,             "UP%s|",         NULL           },
-  
+ 
   { run_command, "%s|", "~/bin/packages.sh" },
 
-  { run_command, "%s|", "~/bin/weather.sh" },
-  
   { run_command,        "%s", "~/bin/bat1.sh" },
   { run_command,        "%s|", "~/bin/bat2.sh" },
   { run_command,        "%s|", "~/bin/temp.sh" },

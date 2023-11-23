@@ -27,7 +27,7 @@ static const int showsystray             = 1;   /* 0 means no systray */
 static int tagindicatortype              = INDICATOR_TOP_LEFT_SQUARE;
 static int tiledindicatortype            = INDICATOR_NONE;
 static int floatindicatortype            = INDICATOR_TOP_LEFT_SQUARE;
-static const char *fonts[]               = { "JetBrainsMono Nerd Font:size=9" };
+static const char *fonts[]               = { "JetBrainsMono Nerd Font:size=10" };
 static const char dmenufont[]            = "JetBrainsMono Nerd Font:size=10";
 
 static char c000000[]                    = "#000000"; // placeholder value
@@ -89,7 +89,7 @@ static char *colors[][ColCount] = {
 };
 
 
-const char *spcmd1[] = {"kitty", "-n", "spterm", "-g", "120x34", NULL };
+const char *spcmd1[] = {"st", "-n", "spterm", "-g", "120x34", NULL };
 static Sp scratchpads[] = {
    /* name          cmd  */
    {"spterm",      spcmd1},
