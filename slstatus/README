@@ -7,6 +7,7 @@ slstatus is a suckless status monitor for window managers that use WM_NAME
 Features
 --------
 - Battery percentage/state/time left
+- Cat (read file)
 - CPU usage
 - CPU frequency
 - Custom shell commands
@@ -26,7 +27,7 @@ Features
 - Swap status (free swap, percentage, total swap and used swap)
 - Temperature
 - Uptime
-- Volume percentage (OSS/ALSA)
+- Volume percentage
 - WiFi signal percentage and ESSID
 
 
@@ -34,6 +35,10 @@ Requirements
 ------------
 Currently slstatus works on FreeBSD, Linux and OpenBSD.
 In order to build slstatus you need the Xlib header files.
+
+- For volume percentage on Linux the kernel module `snd-mixer-oss` must be
+  loaded.
+- For volume percentage on FreeBSD, `sndio` must be installed.
 
 
 Installation
@@ -58,6 +63,7 @@ slstatus can be customized by creating a custom config.h and (re)compiling the
 source code. This keeps it fast, secure and simple.
 
 
-Todo
-----
-Cleaning up the whole codebase it the goal before thinking about a release.
+Upcoming
+--------
+A first feature-complete release with official packages for common distributions
+will come soon.

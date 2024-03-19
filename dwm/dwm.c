@@ -46,6 +46,7 @@
 
 
 
+#include <poll.h>
 
 
 
@@ -396,7 +397,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 };
 static Atom wmatom[WMLast], netatom[NetLast];
 static Atom xatom[XLast];
-static int running = 1;
+static volatile sig_atomic_t running = 1;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
@@ -808,8 +809,8 @@ configurenotify(XEvent *e)
 				for (bar = m->bar; bar; bar = bar->next)
 					XMoveResizeWindow(dpy, bar->win, bar->bx, bar->by, bar->bw, bar->bh);
 			}
-			arrange(NULL);
 			focus(NULL);
+			arrange(NULL);
 		}
 	}
 }
@@ -1449,7 +1450,6 @@ manage(Window w, XWindowAttributes *wa)
 		applyrules(c);
 	}
 
-
 	if (c->x + WIDTH(c) > c->mon->wx + c->mon->ww)
 		c->x = c->mon->wx + c->mon->ww - WIDTH(c);
 	if (c->y + HEIGHT(c) > c->mon->wy + c->mon->wh)
@@ -1684,6 +1684,7 @@ propertynotify(XEvent *e)
 void
 quit(const Arg *arg)
 {
+	restart = arg->i;
 	running = 0;
 }
 
@@ -1826,11 +1827,21 @@ void
 run(void)
 {
 	XEvent ev;
-	/* main event loop */
 	XSync(dpy, False);
-	while (running && !XNextEvent(dpy, &ev)) {
+	/* main event loop */
+	while (running) {
+		struct pollfd pfd = {
+			.fd = ConnectionNumber(dpy),
+			.events = POLLIN,
+		};
+		int pending = XPending(dpy) > 0 || poll(&pfd, 1, -1) > 0;
 
+		if (!running)
+			break;
+		if (!pending)
+			continue;
 
+		XNextEvent(dpy, &ev);
 		if (handler[ev.type])
 			handler[ev.type](&ev); /* call handler */
 	}
@@ -1875,8 +1886,8 @@ sendmon(Client *c, Monitor *m)
 	c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 	attachx(c);
 	attachstack(c);
-	arrange(NULL);
 	focus(NULL);
+	arrange(NULL);
 }
 
 void
@@ -2014,6 +2025,8 @@ setup(void)
 	/* clean up any zombies (inherited from .xinitrc etc) immediately */
 	while (waitpid(-1, NULL, WNOHANG) > 0);
 
+	signal(SIGHUP, sighup);
+	signal(SIGTERM, sigterm);
 
 	/* the one line of bloat that would have saved a lot of time for a lot of people */
 	putenv("_JAVA_AWT_WM_NONREPARENTING=1");
@@ -2132,8 +2145,6 @@ showhide(Client *c)
 void
 spawn(const Arg *arg)
 {
-	struct sigaction sa;
-
 	if (arg->v == dmenucmd)
 		dmenumon[0] = '0' + selmon->num;
 
@@ -2143,12 +2154,6 @@ spawn(const Arg *arg)
 			close(ConnectionNumber(dpy));
 
 		setsid();
-
-		sigemptyset(&sa.sa_mask);
-		sa.sa_flags = 0;
-		sa.sa_handler = SIG_DFL;
-		sigaction(SIGCHLD, &sa, NULL);
-
 		execvp(((char **)arg->v)[0], (char **)arg->v);
 		die("dwm: execvp '%s' failed:", ((char **)arg->v)[0]);
 	}
@@ -2160,8 +2165,8 @@ tag(const Arg *arg)
 
 	if (selmon->sel && arg->ui & TAGMASK) {
 		selmon->sel->tags = arg->ui & TAGMASK;
-		arrange(selmon);
 		focus(NULL);
+		arrange(selmon);
 	}
 }
 
@@ -2221,8 +2226,8 @@ toggletag(const Arg *arg)
 	newtags = selmon->sel->tags ^ (arg->ui & TAGMASK);
 	if (newtags) {
 		selmon->sel->tags = newtags;
-		arrange(selmon);
 		focus(NULL);
+		arrange(selmon);
 	}
 }
 
@@ -2252,8 +2257,8 @@ toggleview(const Arg *arg)
 		selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
 		selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 		selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
-		arrange(selmon);
 		focus(NULL);
+		arrange(selmon);
 	}
 }
 
@@ -2299,9 +2304,9 @@ unmanage(Client *c, int destroyed)
 
 
 	free(c);
-	arrange(m);
 	focus(NULL);
 	updateclientlist();
+	arrange(m);
 }
 
 void
@@ -2595,8 +2600,8 @@ view(const Arg *arg)
 	if (arg->ui & TAGMASK)
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
 	pertagview(arg);
-	arrange(selmon);
 	focus(NULL);
+	arrange(selmon);
 }
 
 Client *
@@ -2708,6 +2713,8 @@ main(int argc, char *argv[])
 	run();
 	cleanup();
 	XCloseDisplay(dpy);
+	if (restart)
+		execvp(argv[0], argv);
 	return EXIT_SUCCESS;
 }
 

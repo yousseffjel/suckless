@@ -15,10 +15,12 @@
 #include "autostart.c"
 #include "movestack.c"
 #include "pertag.c"
+#include "restartsig.c"
 #include "scratchpad.c"
 #include "vanitygaps.c"
 /* Layouts */
 #include "layout_facts.c"
+#include "layout_centeredmaster.c"
 #include "layout_monocle.c"
 #include "layout_tile.c"
 

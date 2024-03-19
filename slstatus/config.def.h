@@ -1,7 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 
 /* interval between updates (in ms) */
-/*#include <stdexcept>*/
 const unsigned int interval = 1000;
 
 /* text to show if no value can be retrieved */
@@ -15,16 +14,17 @@ static const char unknown_str[] = "n/a";
  *
  * battery_perc        battery percentage              battery name (BAT0)
  *                                                     NULL on OpenBSD/FreeBSD
- * battery_state       battery charging state          battery name (BAT0)
- *                                                     NULL on OpenBSD/FreeBSD
  * battery_remaining   battery remaining HH:MM         battery name (BAT0)
  *                                                     NULL on OpenBSD/FreeBSD
- * cpu_perc            cpu usage in percent            NULL
+ * battery_state       battery charging state          battery name (BAT0)
+ *                                                     NULL on OpenBSD/FreeBSD
+ * cat                 read arbitrary file             path
  * cpu_freq            cpu frequency in MHz            NULL
+ * cpu_perc            cpu usage in percent            NULL
  * datetime            date and time                   format string (%F %T)
  * disk_free           free disk space in GB           mountpoint path (/)
  * disk_perc           disk usage in percent           mountpoint path (/)
- * disk_total          total disk space in GB          mountpoint path (/")
+ * disk_total          total disk space in GB          mountpoint path (/)
  * disk_used           used disk space in GB           mountpoint path (/)
  * entropy             available entropy               NULL
  * gid                 GID of current user             NULL
@@ -59,13 +59,20 @@ static const char unknown_str[] = "n/a";
  * uptime              system uptime                   NULL
  * username            username of current user        NULL
  * vol_perc            OSS/ALSA volume in percent      mixer file (/dev/mixer)
- * wifi_perc           WiFi signal in percent          interface name (wlan0)
+ *                                                     NULL on OpenBSD/FreeBSD
  * wifi_essid          WiFi ESSID                      interface name (wlan0)
+ * wifi_perc           WiFi signal in percent          interface name (wlan0)
  */
 static const struct arg args[] = {
 	/* function format          argument */
 
-  { uptime,             "UP%s|",         NULL           },
+		{ kernel_release, "^c#f6c634^ Debian %s  ",  NULL  },
+		{ run_command, "^c#53B1B1^ [ Updates : %s ] ", "aptitude search '~U' | wc -l" }, 
+		{ cpu_perc,	"^c#53B1B1^ [ RAM  %s%% ]   ", NULL },
+		{ ram_perc, "[ CPU %s%% ]  ", NULL	      },
+		{ datetime, "^c#f6c634^ %s","%a %b %-d" },
+		{ datetime, "^c#bafdfe^ %s","%l:%M %p" },
+		 /* { uptime,             "UP%s|",         NULL           },
  
   { run_command, "%s|", "~/bin/packages.sh" },
 
@@ -77,5 +84,5 @@ static const struct arg args[] = {
 
   { run_command,        "%s|",     "~/bin/volume.sh" },
   
-	{ run_command,        "%s",         "~/bin/date.sh" },
+	{ run_command,        "%s",         "~/bin/date.sh" },*/
 };

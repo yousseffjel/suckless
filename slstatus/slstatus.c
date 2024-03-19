@@ -12,13 +12,13 @@
 #include "util.h"
 
 struct arg {
-	const char *(*func)();
+	const char *(*func)(const char *);
 	const char *fmt;
 	const char *args;
 };
 
 char buf[1024];
-static int done;
+static volatile sig_atomic_t done;
 static Display *dpy;
 
 #include "config.h"
@@ -26,9 +26,8 @@ static Display *dpy;
 static void
 terminate(const int signo)
 {
-	(void)signo;
-
-	done = 1;
+	if (signo != SIGUSR1)
+		done = 1;
 }
 
 static void
@@ -42,7 +41,7 @@ difftimespec(struct timespec *res, struct timespec *a, struct timespec *b)
 static void
 usage(void)
 {
-	die("usage: %s [-s]", argv0);
+	die("usage: %s [-s] [-1]", argv0);
 }
 
 int
@@ -57,40 +56,42 @@ main(int argc, char *argv[])
 
 	sflag = 0;
 	ARGBEGIN {
-		case 's':
-			sflag = 1;
-			break;
-		default:
-			usage();
+	case '1':
+		done = 1;
+		/* FALLTHROUGH */
+	case 's':
+		sflag = 1;
+		break;
+	default:
+		usage();
 	} ARGEND
 
-	if (argc) {
+	if (argc)
 		usage();
-	}
 
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = terminate;
 	sigaction(SIGINT,  &act, NULL);
 	sigaction(SIGTERM, &act, NULL);
+	act.sa_flags |= SA_RESTART;
+	sigaction(SIGUSR1, &act, NULL);
 
-	if (!sflag && !(dpy = XOpenDisplay(NULL))) {
+	if (!sflag && !(dpy = XOpenDisplay(NULL)))
 		die("XOpenDisplay: Failed to open display");
-	}
 
-	while (!done) {
-		if (clock_gettime(CLOCK_MONOTONIC, &start) < 0) {
+	do {
+		if (clock_gettime(CLOCK_MONOTONIC, &start) < 0)
 			die("clock_gettime:");
-		}
 
 		status[0] = '\0';
 		for (i = len = 0; i < LEN(args); i++) {
-			if (!(res = args[i].func(args[i].args))) {
+			if (!(res = args[i].func(args[i].args)))
 				res = unknown_str;
-			}
+
 			if ((ret = esnprintf(status + len, sizeof(status) - len,
-			                    args[i].fmt, res)) < 0) {
+			                     args[i].fmt, res)) < 0)
 				break;
-			}
+
 			len += ret;
 		}
 
@@ -100,37 +101,31 @@ main(int argc, char *argv[])
 			if (ferror(stdout))
 				die("puts:");
 		} else {
-			if (XStoreName(dpy, DefaultRootWindow(dpy), status)
-                            < 0) {
+			if (XStoreName(dpy, DefaultRootWindow(dpy), status) < 0)
 				die("XStoreName: Allocation failed");
-			}
 			XFlush(dpy);
 		}
 
 		if (!done) {
-			if (clock_gettime(CLOCK_MONOTONIC, &current) < 0) {
+			if (clock_gettime(CLOCK_MONOTONIC, &current) < 0)
 				die("clock_gettime:");
-			}
 			difftimespec(&diff, &current, &start);
 
 			intspec.tv_sec = interval / 1000;
 			intspec.tv_nsec = (interval % 1000) * 1E6;
 			difftimespec(&wait, &intspec, &diff);
 
-			if (wait.tv_sec >= 0) {
-				if (nanosleep(&wait, NULL) < 0 &&
-				    errno != EINTR) {
+			if (wait.tv_sec >= 0 &&
+			    nanosleep(&wait, NULL) < 0 &&
+			    errno != EINTR)
 					die("nanosleep:");
-				}
-			}
 		}
-	}
+	} while (!done);
 
 	if (!sflag) {
 		XStoreName(dpy, DefaultRootWindow(dpy), NULL);
-		if (XCloseDisplay(dpy) < 0) {
+		if (XCloseDisplay(dpy) < 0)
 			die("XCloseDisplay: Failed to close display");
-		}
 	}
 
 	return 0;

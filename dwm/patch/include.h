@@ -15,9 +15,11 @@
 #include "autostart.h"
 #include "movestack.h"
 #include "pertag.h"
+#include "restartsig.h"
 #include "scratchpad.h"
 #include "vanitygaps.h"
 /* Layouts */
+#include "layout_centeredmaster.h"
 #include "layout_monocle.h"
 #include "layout_tile.h"
 
