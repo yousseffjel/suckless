@@ -66,17 +66,12 @@ static const char unknown_str[] = "n/a";
 static const struct arg args[] = {
 	/* function format          argument */
 
-	{ uptime,             "UP%s|",         NULL           },
- 
-	{ run_command, "%s|", "~/src/bin/packages.sh" },
-
-  	{ run_command,        "%s", "~/src/bin/bat1.sh" },
-  	{ run_command,        "%s|", "~/src/bin/bat2.sh" },
-  	{ run_command,        "%s|", "~/src/bin/temp.sh" },
-  	{ run_command,        "%s|", "~/src/bin/cpu.sh" },
-  	{ run_command,        "%s|", "~/src/bin/memory.sh" },
-
-  	{ run_command,        "%s|",     "~/src/bin/volume.sh" },
-  
-	{ run_command,        "%s",         "~/src/bin/date.sh" },
+	{ uptime,          "UP%s",          NULL     },
+ { battery_state,   "%s",            "BAT0"   },
+ { battery_perc,    " %s%% |",       "BAT0"   },
+ { battery_state,   "%s",            "BAT1"   },
+ { battery_perc,    " %s%% |",       "BAT1"   },
+ { cpu_perc,        " :%s%% |",     NULL     },
+	{ ram_used,        " :%s |",       NULL     },
+	{ datetime,        " %s |",         "%F %T"  },
 };
